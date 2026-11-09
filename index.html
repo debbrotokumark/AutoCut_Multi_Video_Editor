@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1116">
+<title>AutoCut — ব্যাচ ভিডিও এডিটর</title>
+<meta name="description" content="অনেকগুলো অডিও + ভিডিও জোড়া একসাথে অটো এডিট করে MP4 ডাউনলোড। সবকিছু ব্রাউজারেই হয়, কোনো ফাইল আপলোড হয় না।">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='4' width='20' height='16' rx='4' fill='%233b82f6'/%3E%3Cpath d='M10 9l5 3-5 3V9z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="batch">
+
+<header class="topbar">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="#3b82f6"/><path d="M10 9l5 3-5 3V9z" fill="#fff"/></svg>
+    <div><b>AutoCut</b><small>ব্যাচ অটো এডিটর · সব কাজ ব্রাউজারেই</small></div>
+  </div>
+  <div class="top-actions">
+    <span class="engine" id="engineState" title="FFmpeg ইঞ্জিনের অবস্থা">⏳ ইঞ্জিন…</span>
+    <a class="btn" href="editor.html" title="একটি ভিডিও হাতে এডিট করতে">✎ <span class="hide-sm">ম্যানুয়াল এডিটর</span></a>
+  </div>
+</header>
+
+<main class="bwrap">
+
+  <!-- সেটিংস -->
+  <aside class="panel bset">
+    <h3>অডিও</h3>
+    <div class="slider"><label for="vMain">Main Audio ভলিউম <output id="oMain">35%</output></label><input type="range" id="vMain" min="0" max="100" value="35"></div>
+    <div class="slider"><label for="vVideo">ভিডিওর নিজস্ব সাউন্ড <output id="oVideo">100%</output></label><input type="range" id="vVideo" min="0" max="100" value="100"></div>
+
+    <h3>লোগো <span class="saved hidden" id="logoSaved">✓ ব্রাউজারে সেভ করা</span></h3>
+    <div class="logo-box">
+      <div class="logo-frame" id="logoFrame" data-ar="16:9">
+        <img id="logoPrev" class="hidden" alt="logo">
+        <span class="ph" id="logoPh">লোগো নেই</span>
+      </div>
+      <div class="row tight">
+        <label class="btn sm" for="in-logo">🖼️ <span id="logoBtnTxt">লোগো দিন</span></label>
+        <input id="in-logo" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        <button class="btn sm danger hidden" id="logoRemove">সরান</button>
+        <div class="seg ar" role="group" aria-label="প্রিভিউ রেশিও">
+          <button class="btn sm active" data-ar="16:9">16:9</button>
+          <button class="btn sm" data-ar="9:16">9:16</button>
+        </div>
+      </div>
+      <p class="hint" id="logoName"></p>
+      <label class="check"><input type="checkbox" id="logoOn" checked> সব ভিডিওতে লোগো বসান</label>
+      <div class="slider"><label for="lSize">আকার <output id="oSize">18%</output></label><input type="range" id="lSize" min="3" max="80" value="18"></div>
+      <div class="slider"><label for="lOpac">স্বচ্ছতা <output id="oOpac">53%</output></label><input type="range" id="lOpac" min="10" max="100" value="53"></div>
+      <label class="field">অবস্থান
+        <select id="lCorner">
+          <option value="bl">নিচে বামে</option>
+          <option value="br">নিচে ডানে</option>
+          <option value="tl">উপরে বামে</option>
+          <option value="tr">উপরে ডানে</option>
+        </select>
+      </label>
+    </div>
+
+    <h3>এডিট ও এক্সপোর্ট</h3>
+    <label class="field">ভিডিও রিপিট ধরন
+      <select id="pattern">
+        <option value="alt">নরমাল → রিভার্স → নরমাল…</option>
+        <option value="normal">সবসময় নরমাল</option>
+      </select>
+    </label>
+    <label class="field">কোয়ালিটি
+      <select id="quality">
+        <option value="draft">ড্রাফট — দ্রুত, ছোট ফাইল</option>
+        <option value="standard">স্ট্যান্ডার্ড — ভারসাম্য</option>
+        <option value="high">হাই — ধীর, সেরা মান</option>
+      </select>
+    </label>
+    <label class="field">একসাথে কতগুলো রেন্ডার (প্যারালাল)
+      <select id="parallel">
+        <option value="1">১টা — একটার পর একটা (কম মেমোরি)</option>
+        <option value="2">২টা</option>
+        <option value="3">৩টা</option>
+        <option value="4">৪টা (বেশি RAM লাগে)</option>
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" id="autoStart"> জোড়া সম্পূর্ণ হলেই অটো শুরু</label>
+    <label class="check"><input type="checkbox" id="autoDownload"> শেষ হলেই অটো ডাউনলোড</label>
+    <p class="hint">সেটিং বদলালে যেগুলো এখনো শুরু হয়নি শুধু সেগুলোতে প্রযোজ্য হবে। সব সেটিং ও লোগো এই ব্রাউজারে সেভ থাকে।</p>
+  </aside>
+
+  <!-- কিউ -->
+  <section class="panel bq">
+    <div class="q-head">
+      <div>
+        <h2>ভিডিও কিউ</h2>
+        <div class="q-sum" id="qSum">এখনো কিছু যোগ হয়নি</div>
+      </div>
+      <div class="row tight">
+        <button class="btn primary" id="btnAdd">＋ নতুন জোড়া</button>
+        <label class="btn" for="in-bulk" title="একসাথে অনেক ভিডিও ও অডিও বাছুন, নামের ক্রম অনুযায়ী জোড়া লাগবে">📂 একসাথে অনেক ফাইল</label>
+        <input id="in-bulk" type="file" accept="video/*,audio/*,.aac,.m4a,.mp3,.wav,.ogg,.flac,.opus" multiple hidden>
+        <button class="btn" id="btnStartAll" title="অপেক্ষমাণ সবগুলো শুরু করুন">▶ সব শুরু</button>
+        <button class="btn" id="btnDlAll" title="সম্পন্ন সবগুলো আবার ডাউনলোড">⬇ সব ডাউনলোড</button>
+        <button class="btn" id="btnClean" title="সম্পন্নগুলো তালিকা থেকে সরান">🧹 সম্পন্ন মুছুন</button>
+      </div>
+    </div>
+
+    <div class="howto" id="howto">
+      <b>কীভাবে:</b> প্রতিটি সারিতে একটি <b>অডিও</b> ও একটি <b>ভিডিও</b> দিন (ড্রাগ করেও ফেলতে পারেন)। দুটো দেওয়া মাত্র ওই জোড়া লাইনে ঢুকে অটো এডিট হবে, শেষ হলে নিজে নিজে ডাউনলোড হবে।
+      <br>অনেক ফাইল থাকলে <b>📂 একসাথে অনেক ফাইল</b> বা পুরো ফোল্ডারের ফাইল এখানে ফেলুন — ভিডিও ১ ↔ অডিও ১, ভিডিও ২ ↔ অডিও ২… এভাবে নামের ক্রমে জোড়া লাগবে। চলার সময়েও নতুন জোড়া যোগ করা যায়।
+    </div>
+
+    <ol class="qlist" id="qList"></ol>
+    <p class="hint">⚠ একসাথে অনেক ফাইল অটো ডাউনলোড হলে Chrome একবার "একাধিক ফাইল ডাউনলোডের অনুমতি" চাইবে — <b>Allow</b> দিন। রেন্ডার চলাকালীন ট্যাব খোলা রাখুন।</p>
+  </section>
+</main>
+
+<div class="dropveil hidden" id="veil"><div>📥 ফাইলগুলো এখানে ছাড়ুন<small>ভিডিও ও অডিও নামের ক্রমে জোড়া লাগবে</small></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script type="module" src="js/batch.js"></script>
+</body>
+</html>
