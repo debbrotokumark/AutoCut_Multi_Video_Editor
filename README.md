@@ -25,12 +25,6 @@
 - লোগো একবার দিলেই ব্রাউজারে (IndexedDB) সেভ থাকে; ব্যাচ ও ম্যানুয়াল — দুই পেজেই নিজে বসে যায়। "সরান" চাপলে মুছে যায়।
 - ব্যাকগ্রাউন্ড অডিও ব্যাচ মোডে নেই; ম্যানুয়াল এডিটরেও লুকানো।
 
-## GitHub Pages-এ হোস্ট করা
-1. নতুন repo বানান, এই ফোল্ডারের সব ফাইল (`.nojekyll` সহ) push করুন।
-2. Repo → **Settings → Pages → Build and deployment**: Source = *Deploy from a branch*, Branch = `main`, Folder = `/ (root)`।
-3. কিছুক্ষণ পর `https://<username>.github.io/<repo>/` এ সাইট চালু।
-
-লোকালি দেখতে `index.html` ডাবল-ক্লিক করলে চলবে না (ES modules লাগে): `python3 -m http.server` চালিয়ে `http://localhost:8000` খুলুন।
 
 ## FFmpeg কোথা থেকে লোড হয়
 - প্রথমে `vendor/ffmpeg/` (আপনার নিজের repo), না পেলে jsDelivr, তারপর unpkg (~31 MB, ব্রাউজার ক্যাশ করে; একবারই নামে, সব প্যারালাল জব শেয়ার করে)।
