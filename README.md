@@ -3,6 +3,8 @@
 ব্যাকএন্ড নেই, বিল্ড নেই। শুধু স্ট্যাটিক ফাইল (HTML/CSS/JS), তাই সরাসরি **GitHub Pages**-এ চলে।
 সব প্রসেসিং আপনার ব্রাউজারে (FFmpeg WebAssembly); কোনো ফাইল সার্ভারে যায় না।
 
+Live : https://debbrotokumark.github.io/AutoCut_Multi_Video_Editor/
+
 ## দুটো পেজ
 | পেজ | কাজ |
 |---|---|
